@@ -1,7 +1,7 @@
 import pytest
 
 from app import app
-from grades import letter_grade, weighted_average
+from grades import letter_grade, score_needed_on_final, weighted_average
 
 
 # ---- The grade math (grades.py) ----
@@ -68,3 +68,39 @@ def test_form_rejects_text_instead_of_numbers(client):
         "weight": ["100"],
     })
     assert "must be numbers" in response.get_data(as_text=True)
+
+
+# ---- What do I need on the final? ----
+
+def test_score_needed_on_final():
+    # 80 so far counts for 50%; to finish with 85 the final (50%) must be 90.
+    assert score_needed_on_final(80, 50, 85) == 90
+    # 88 so far counts for 75%; to finish with 90 the final (25%) must be 96.
+    assert score_needed_on_final(88, 25, 90) == 96
+
+
+def test_score_needed_on_final_rejects_bad_weight():
+    with pytest.raises(ValueError, match="weight"):
+        score_needed_on_final(80, 0, 90)
+    with pytest.raises(ValueError, match="weight"):
+        score_needed_on_final(80, 120, 90)
+
+
+def test_final_form_shows_needed_score(client):
+    response = client.post("/", data={
+        "form": "final",
+        "current": "88",
+        "final_weight": "25",
+        "target": "90",
+    })
+    assert "You need 96.0% on the final" in response.get_data(as_text=True)
+
+
+def test_final_form_says_when_target_is_out_of_reach(client):
+    response = client.post("/", data={
+        "form": "final",
+        "current": "60",
+        "final_weight": "20",
+        "target": "90",
+    })
+    assert "out of reach" in response.get_data(as_text=True)
