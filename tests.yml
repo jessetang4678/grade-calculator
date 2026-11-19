@@ -1,0 +1,29 @@
+name: Tests
+
+# When to run: on every pull request, and on every push to main
+# (merging a pull request counts as a push to main).
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# The run may only read the repository, nothing more.
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run tests
+        run: pytest
