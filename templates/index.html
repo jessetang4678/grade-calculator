@@ -9,6 +9,7 @@
     main { max-width: 640px; margin: 40px auto; background: #fff; padding: 32px; border-radius: 12px;
            box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
     h1 { margin-top: 0; }
+    h2 { margin-top: 40px; padding-top: 24px; border-top: 1px solid #e5e7eb; }
     p.hint { color: #6b7280; margin-top: -8px; }
     table { width: 100%; border-collapse: collapse; margin: 16px 0; }
     th { text-align: left; font-size: 14px; color: #6b7280; padding-bottom: 6px; }
@@ -44,6 +45,29 @@
     {% endif %}
     {% if error %}
     <div class="error">{{ error }}</div>
+    {% endif %}
+
+    <h2>What do I need on the final?</h2>
+    <p class="hint">Enter your grade so far, how much the final counts, and the course grade you want.</p>
+
+    <form method="post">
+      <input type="hidden" name="form" value="final">
+      <table>
+        <tr><th>Current grade %</th><th>Final's weight %</th><th>Target grade %</th></tr>
+        <tr>
+          <td><input name="current" value="{{ final_inputs.current }}" inputmode="decimal" placeholder="e.g. 84"></td>
+          <td><input name="final_weight" value="{{ final_inputs.final_weight }}" inputmode="decimal" placeholder="e.g. 30"></td>
+          <td><input name="target" value="{{ final_inputs.target }}" inputmode="decimal" placeholder="e.g. 90"></td>
+        </tr>
+      </table>
+      <button type="submit">Calculate</button>
+    </form>
+
+    {% if final_result %}
+    <div class="result">{{ final_result }}</div>
+    {% endif %}
+    {% if final_error %}
+    <div class="error">{{ final_error }}</div>
     {% endif %}
   </main>
 </body>
